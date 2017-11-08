@@ -27,10 +27,17 @@ let
       description = "Replay viewer for Halite 2";
     };
     production = true;
+    postInstall = ''
+      patchelf \
+              --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
+              $out/lib/node_modules/Chlorine/node_modules/node-zstandard/bin/zstd.linux64
+
+      mkdir -p $out/bin
+      cp chlorine.sh $out/bin/chlorine
+      '';
+
   };
 in
 {
-  tarball = nodeEnv.buildNodeSourceDist args;
   package = nodeEnv.buildNodePackage args;
-  shell = nodeEnv.buildNodeShell args;
 }
